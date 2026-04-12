@@ -13,13 +13,15 @@ This skill teaches agents how to:
 
 ## Skills.sh Publishing
 
-To publish this skill, keep it in a public Git repository and install it with `skills.sh` from the repository URL.
+This skill is published in a public Git repository and can be installed with `skills.sh` from the repository URL.
 
 Example:
 
 ```bash
-npx skills add <public-git-repo-url>
+npx skills add https://github.com/zhouchangui/markdown-markdown-agent
 ```
+
+Repository: [https://github.com/zhouchangui/markdown-markdown-agent](https://github.com/zhouchangui/markdown-markdown-agent)
 
 ## Repository Layout
 
