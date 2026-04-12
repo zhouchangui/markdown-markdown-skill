@@ -1,9 +1,9 @@
 ---
-name: markdown-markdown
-description: Use when an agent needs to review Markdown files with markdown-markdown, especially for local browser review, IM/Feishu chat handoff with a shareable global link, or long-running jobs that need output and status files.
+name: markdown-markdown-skill
+description: Use when an agent needs to review Markdown files with the `markdown-markdown` npm package, especially for local browser review, IM/Feishu chat handoff, or long-running jobs that need output and status files.
 ---
 
-# markdown-markdown
+# markdown-markdown-skill
 
 Concise guidance for agents using the `markdown-markdown` npm package.
 
@@ -47,7 +47,3 @@ Concise guidance for agents using the `markdown-markdown` npm package.
 - `--status-file` is for orchestration; do not rely on terminal text alone for completion detection.
 - Keep annotations short and location-focused.
 - Use `--output` plus `--status-file` for long jobs; do not rely on terminal text alone.
-
-## Source
-
-- Created for the `markdown-markdown` review CLI in this repository.

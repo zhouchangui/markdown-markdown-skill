@@ -1,12 +1,18 @@
-# markdown-markdown skill repository
+# markdown-markdown-skill
 
-This repository hosts the `markdown-markdown` skill in the `markdown-markdown/` folder.
+This repository hosts the installable `markdown-markdown-skill` skill.
 
-The skill folder contains:
+Use this skill when an agent needs to review Markdown with the `markdown-markdown` npm package, especially for local browser review, IM/Feishu handoff, or long-running jobs that need output and status files.
 
-- `SKILL.md` - the installable skill entrypoint
-- `README.md` - human-facing usage and publishing notes
+## Install
+
+```bash
+npx skills add https://github.com/zhouchangui/markdown-markdown-skill
+```
+
+## Layout
+
+- `SKILL.md` - skill entrypoint
+- `README.md` - short overview and publishing notes
 - `LICENSE` - MIT license
 - `references/` - compact supporting docs
-
-To install the skill, point `skills.sh` at this repository and the `markdown-markdown/` folder.
