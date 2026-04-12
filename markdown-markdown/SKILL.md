@@ -1,9 +1,9 @@
 ---
-name: markdown-markdown-agent
+name: markdown-markdown
 description: Use when an agent needs to review Markdown files with markdown-markdown, choose file or directory input, control browser or Cloudflare tunnel behavior, capture final review JSON, or emit lifecycle status for long-running review jobs.
 ---
 
-# markdown-markdown-agent
+# markdown-markdown
 
 Practical guidance for agents that need to run `markdown-markdown` on one file or a directory of Markdown files and turn the result into compact, actionable edit instructions.
 
