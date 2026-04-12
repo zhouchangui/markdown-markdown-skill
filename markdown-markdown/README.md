@@ -18,10 +18,10 @@ This skill is published in a public Git repository and can be installed with `sk
 Example:
 
 ```bash
-npx skills add https://github.com/zhouchangui/markdown-markdown-agent
+npx skills add https://github.com/zhouchangui/markdown-markdown-skill
 ```
 
-Repository: [https://github.com/zhouchangui/markdown-markdown-agent](https://github.com/zhouchangui/markdown-markdown-agent)
+Repository: [https://github.com/zhouchangui/markdown-markdown-skill](https://github.com/zhouchangui/markdown-markdown-skill)
 
 ## Repository Layout
 
