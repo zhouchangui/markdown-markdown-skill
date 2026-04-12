@@ -2,14 +2,19 @@
 
 Skill repository for agents that need to operate the `markdown-markdown` Markdown review CLI.
 
-This skill teaches agents how to:
+This skill is for compact Markdown review handoffs.
 
-- choose between file and directory input
-- decide when to require Cloudflare, disable it, or stay local
-- open the review in the system browser or the compact app window
-- write final review JSON to disk
-- emit lifecycle status files for asynchronous orchestration
-- turn the review output into compact edit instructions for another AI
+## Use Cases
+
+- Review one Markdown file or a whole directory.
+- Send a clickable global link in IM or Feishu-style chat.
+- Keep long-running runs visible with output and status files.
+
+## Dependencies
+
+- `markdown-markdown` npm package
+- `cloudflared` only when a public/global URL is required
+- A local browser only when running in a local session
 
 ## Skills.sh Publishing
 
