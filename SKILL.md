@@ -25,6 +25,15 @@ Concise guidance for agents using the `markdown-markdown` npm package.
 - Local terminal session: prefer `--browser system` and open locally.
 - If the environment is unclear, ask once, then keep that choice for the run.
 
+## Execution Loop
+
+- Start the review command for the current file or directory.
+- Wait for the returned payload. The startup banner or local URL is only setup, not completion.
+- Treat the returned JSON as the source of truth for the next action.
+- Use `rootPath`, `files[*].absolutePath`, `annotations[*].selection`, and `annotations[*].note` to locate the requested change.
+- Follow the compact `prompt` and then either edit the file, answer the user, or ask one clarification question if the payload is still ambiguous.
+- Do not claim the task is done until the returned payload has been read and applied.
+
 ## Quick Reference
 
 | Situation | Use |
@@ -40,6 +49,8 @@ Concise guidance for agents using the `markdown-markdown` npm package.
 - `prompt` is the compact edit brief.
 - `annotations` are short anchors for locating changes.
 - `phase: completed` or `phase: failed` in the status file signals the end of the run.
+- The review result is the returned JSON payload, not the startup message.
+- If the payload includes an annotation, use its line range and anchor text to make a surgical change.
 
 ## Gotchas
 
@@ -47,3 +58,4 @@ Concise guidance for agents using the `markdown-markdown` npm package.
 - `--status-file` is for orchestration; do not rely on terminal text alone for completion detection.
 - Keep annotations short and location-focused.
 - Use `--output` plus `--status-file` for long jobs; do not rely on terminal text alone.
+- Launching the session is not the end of the workflow; always wait for the returned payload before acting.
