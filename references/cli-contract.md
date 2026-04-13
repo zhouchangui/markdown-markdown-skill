@@ -1,27 +1,25 @@
-# markdown-markdown CLI contract
+# markdown-markdown review CLI contract
 
 Dependencies:
 - `markdown-markdown`
 - `cloudflared` only for public links
 
 Environment:
-- Local: `--browser system`
-- IM/Feishu: `--cloudflare`
+- Local: `review create --no-cloudflare --browser system <path>`
+- IM/Feishu: `review create --cloudflare <path>`
 
-Version rule:
-- If `markdown-markdown review --help` succeeds, use async session commands
-- Otherwise use the legacy one-shot command
+Session rules:
+- One active review session at a time
+- `review create` starts the session
+- `review wait` returns the review result
 
-Async session loop:
-1. `markdown-markdown review create <path>`
-2. `markdown-markdown review wait`
+Loop:
+1. `review create <path>`
+2. `review wait`
 3. `finish_review` -> apply payload, continue
-4. `continue_review` -> apply payload, `markdown-markdown review refresh`, wait again
+4. `continue_review` -> apply payload, `review refresh`, wait again
 5. `abandoned` -> stop and ask the user what to do next
-
-Legacy loop:
-1. `markdown-markdown ... <path>`
-2. Wait for the returned JSON payload
+6. `review close` if cleanup is still needed
 
 Payload rule:
-- Use the returned JSON, not the startup URL, as the handoff artifact
+- Use the returned JSON, not the startup metadata, as the handoff artifact

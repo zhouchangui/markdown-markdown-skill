@@ -1,6 +1,6 @@
 # markdown-markdown-skill
 
-Skill for agents that use the `markdown-markdown` npm package to review Markdown files.
+Skill for agents that use the async `markdown-markdown review` CLI to review Markdown files.
 
 ## Install
 
@@ -13,8 +13,8 @@ npm i markdown-markdown
 
 - Prefer `--browser system` in local terminal sessions.
 - Prefer `--cloudflare` in IM or Feishu handoff flows.
-- If `markdown-markdown review --help` succeeds, use the async session flow.
-- Otherwise use the legacy one-shot flow and wait for the returned JSON.
+- `review create` is setup only; `review wait` returns the review result.
+- If the review result is `continue_review`, apply edits, run `review refresh`, then wait again.
 - If the review result is `abandoned`, stop and ask whether to restart review or continue without it.
 
 ## Files
