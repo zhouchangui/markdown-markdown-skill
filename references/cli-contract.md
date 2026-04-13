@@ -25,8 +25,10 @@ Session rules:
 - Never use the legacy one-shot mode for agent review workflows
 - `review create` starts the session and prints `sessionId`, `reviewUrl`, `controlUrl`, `publicUrl`, `round`, and `phase`
 - In chat-tool flow, a missing `publicUrl` means the public-link setup did not succeed
+- While a session is active, persist `sessionId`, `reviewUrl`, `controlUrl`, `round`, `phase`, `rootPath`, and the latest file snapshot or diff as the current working context
 - `review wait` returns the review result and is the source of truth
 - `review wait` must stay actively monitored until it exits; if the agent runs it in another terminal or background session, it must proactively poll or reattach instead of waiting for the user to nudge it
+- Treat `review wait` as the live watcher that should catch file updates and web-side submissions without a second chat reminder
 - Chat-tool flows must send the returned `reviewUrl` back as a clickable hyperlink and tell the user to click it for review
 - If the chat channel supports cards, rich messages, or buttons, prefer sending the review link inside a card instead of plain text
 - If a chat-tool flow cannot create a public URL, stop and surface that blocker
@@ -34,7 +36,7 @@ Session rules:
 
 Loop:
 1. `npx markdown-markdown review create ...`
-2. Start or keep `npx markdown-markdown review wait` listening
+2. Start or keep `npx markdown-markdown review wait` listening as a live watcher
 3. `continue_review` -> read payload -> edit files -> `npx markdown-markdown review refresh` -> wait again
 4. `finish_review` -> read payload -> apply any final edits if needed -> `npx markdown-markdown review close`
 5. `abandoned` -> read `abandonedReason` or `reason` -> `npx markdown-markdown review close` -> report or recover

@@ -1,6 +1,6 @@
 ---
 name: markdown-markdown-skill
-description: Use when an agent needs a human-in-the-loop Markdown review SOP through `npx markdown-markdown review` for a file or directory.
+description: Use when an agent needs a human-in-the-loop Markdown review SOP through `npx markdown-markdown review` for a file or directory, especially when the same Markdown target will be revised repeatedly and the review session must stay active across turns.
 ---
 
 # markdown-markdown-skill
@@ -11,8 +11,18 @@ Use this skill when an agent has produced a longer Markdown file that should be 
 
 - A user asks for review on one Markdown file or a directory of Markdown files.
 - The workflow needs an async review loop instead of the legacy one-shot flow.
+- The same Markdown target may be edited, submitted, or reopened across multiple turns and the review session must stay continuous.
 - The current conversation is in a chat tool and needs a public review link.
 - The review should open in a local browser session instead of chat.
+
+## Review Continuity
+
+- While a review session is active, treat `sessionId`, `reviewUrl`, `controlUrl`, `round`, `phase`, `rootPath`, and the latest file snapshot or diff as persistent context for that same session.
+- Start a live watcher as soon as the session is created, and keep it attached until the session is explicitly closed, finished, or abandoned.
+- Any user update such as "I changed it", "I submitted it", or "continue" is a continuation of the same session, not a new review.
+- If file content changes while the session is active, re-read the latest content or payload before responding. Do not defer the read to a later turn.
+- Do not ask the user to repeat the request or remind you to look again.
+- Do not break the active review into a fresh task unless the target has changed or the previous session is closed.
 
 ## SOP
 
@@ -34,7 +44,8 @@ Use this skill when an agent has produced a longer Markdown file that should be 
    In local flow, let the system browser open the page.
 6. Wait for the review result.
    Run `npx markdown-markdown review wait` and treat its returned JSON as the source of truth.
-   After starting `review wait`, keep monitoring that process until it exits. Do not assume the user will remind you to read the result.
+   Keep that wait process active for the lifetime of the session. If you are interrupted, reattach or poll the same wait process before doing anything else.
+   Do not assume the user will remind you to read the result.
 7. Branch on the returned action.
    If the action is `continue_review`, edit the files from the returned payload, then run `npx markdown-markdown review refresh`, then wait again.
    If the action is `finish_review`, apply any last requested edits if needed, close the session with `npx markdown-markdown review close`, then continue the rest of the task.
@@ -58,12 +69,13 @@ Use this skill when an agent has produced a longer Markdown file that should be 
 - Keep only one active review session at a time.
 - Treat `review wait` as the source of truth for the user's decision.
 - Always invoke the CLI as `npx markdown-markdown ...`.
-- `review wait` is not fire-and-forget. Keep it in the foreground, or if you move it to another session, proactively poll that session until it exits.
+- `review wait` is not fire-and-forget. Keep it in the foreground, or if you move it to another session, proactively poll that session until it exits. This watcher is the mechanism that should catch web-side submissions without requiring a second chat reminder.
 - On chat-tool `--cloudflare` failure, retry once, then surface the blocker. Do not silently fall back to localhost when a public link is required.
 - Local fallback is allowed only when the agent knows the user can review in the local browser on the same machine.
 - Do not call `review refresh` before handling a `continue_review` payload.
 - On `abandoned`, read and report `abandonedReason` or `reason` before deciding whether to restart.
 - Close the session after `finish_review` or `abandoned` before moving on.
+- Do not respond with deferrals such as "I will read it later" or "remind me again". If the session is active, read now and continue the same session.
 - Do not claim completion until the returned payload has been read and handled.
 
 ## Reference
