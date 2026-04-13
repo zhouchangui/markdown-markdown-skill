@@ -1,33 +1,28 @@
 ---
 name: markdown-markdown-skill
-description: Use when an agent must review a Markdown file or directory with the `markdown-markdown` review CLI, especially in local terminal sessions or IM/Feishu handoff flows.
+description: Use when an agent must collect review on Markdown files through `markdown-markdown review`, especially in local browser sessions or chat-tool handoff flows.
 ---
 
 # markdown-markdown-skill
 
-Requires:
-- `markdown-markdown` installed
-- `cloudflared` only for public links
-
-Environment:
-- Local terminal: `markdown-markdown review create --no-cloudflare --browser system <path>`
-- IM/Feishu/chat: `markdown-markdown review create --cloudflare <path>`
-- If the environment is unclear, ask once: local browser or public link
+Install:
+- `npm i markdown-markdown`
+- Use `npx markdown-markdown` if the binary is not already on PATH
+- `cloudflared` is required for public chat-channel links
 
 Rules:
-- Use only one active review session at a time
-- `review create` starts the session; it does not return the review result
-- The review result comes from `review wait`
-
-Flow:
-1. `markdown-markdown review create <path>`
-2. `markdown-markdown review wait`
-3. `finish_review`: apply the payload and continue normal work
-4. `continue_review`: apply the payload, run `markdown-markdown review refresh`, then `markdown-markdown review wait` again
-5. `abandoned`: stop and ask whether to restart review or continue without review
-6. `markdown-markdown review close` if cleanup is still needed
-
-Payload:
-- Treat the returned JSON as the source of truth
+- Use only the async commands: `review create`, `review wait`, `review refresh`, and `review close`
+- Never use the legacy one-shot mode for agent workflows
+- Keep only one active review session at a time
+- `review create` starts the session and prints startup JSON with `sessionId`, `reviewUrl`, `controlUrl`, `publicUrl`, `round`, and `phase`
+- `review wait` is the source of truth for the user's decision
+- Chat tools such as Feishu, WeChat, Slack, or Telegram must use `npx markdown-markdown review create --cloudflare <path>`
+- Non-chat sessions default to `npx markdown-markdown review create --no-cloudflare --browser system <path>`
+- In chat-tool flows, send the returned `reviewUrl` back as a clickable link or card and ask the user to click it
+- If a chat-tool flow cannot produce a public link, stop and report the blocker instead of falling back to localhost
+- Keep `review wait` listening while the user reviews; if it may take a while, leave it running in a background terminal or separate session
+- `finish_review` ends the round
+- `continue_review` means apply the payload, run `review refresh`, then wait again
+- `abandoned` means stop and ask whether to restart review or continue without it
 - Use `rootPath`, `files[*].absolutePath`, `annotations[*].selection`, `selectedText`, and `note` to locate edits
 - Do not claim completion until the payload has been read and handled
