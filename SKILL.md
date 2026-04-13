@@ -1,61 +1,38 @@
 ---
 name: markdown-markdown-skill
-description: Use when an agent needs to review Markdown files with the `markdown-markdown` npm package, especially for local browser review, IM/Feishu chat handoff, or long-running jobs that need output and status files.
+description: Use when an agent must review a Markdown file or directory with the `markdown-markdown` npm package and wait for a structured review payload before editing, especially in local terminal sessions or IM/Feishu handoff flows.
 ---
 
 # markdown-markdown-skill
 
-Concise guidance for agents using the `markdown-markdown` npm package.
+Requires:
+- `markdown-markdown` installed
+- `cloudflared` only when a public URL is required
 
-## Use Cases
+Environment:
+- Local terminal: prefer `--browser system`
+- IM/Feishu/chat: prefer `--cloudflare`
+- If the environment is unclear, ask once: local browser or public link
 
-- Review one Markdown file or a whole directory.
-- Share a clickable result in IM or Feishu-style chat channels.
-- Capture long-running reviews to disk for later automation.
+Command rule:
+- If `markdown-markdown review --help` succeeds, use async session commands
+- Otherwise use the legacy one-shot command
+- Async mode allows only one active review session at a time
 
-## Dependencies
+Async flow:
+1. `markdown-markdown review create <path>`
+2. `markdown-markdown review wait`
+3. `finish_review`: apply the payload and continue normal work
+4. `continue_review`: apply the payload, run `markdown-markdown review refresh`, then `markdown-markdown review wait` again
+5. `abandoned`: stop and ask whether to restart review or continue without review
+6. `markdown-markdown review close` if cleanup is still needed
 
-- `markdown-markdown` npm package must be available.
-- `cloudflared` is required only when a public or global URL is needed.
-- The system browser is optional; the app window remains the fallback.
+Legacy flow:
+1. `markdown-markdown [--browser system|--cloudflare|--no-cloudflare] <path>`
+2. Wait for the returned JSON payload
+3. Treat the startup URL as setup only, not completion
 
-## Environment Rule
-
-- IM or Feishu chat: prefer `--cloudflare`, then send the generated URL as a card or link.
-- Local terminal session: prefer `--browser system` and open locally.
-- If the environment is unclear, ask once, then keep that choice for the run.
-
-## Execution Loop
-
-- Start the review command for the current file or directory.
-- Wait for the returned payload. The startup banner or local URL is only setup, not completion.
-- Treat the returned JSON as the source of truth for the next action.
-- Use `rootPath`, `files[*].absolutePath`, `annotations[*].selection`, and `annotations[*].note` to locate the requested change.
-- Follow the compact `prompt` and then either edit the file, answer the user, or ask one clarification question if the payload is still ambiguous.
-- Do not claim the task is done until the returned payload has been read and applied.
-
-## Quick Reference
-
-| Situation | Use |
-|-----------|-----|
-| Local single file | `npx markdown-markdown --no-cloudflare --browser system ./docs/spec.md` |
-| IM or chat handoff | `npx markdown-markdown --cloudflare ./docs/spec.md` |
-| Directory review | `npx markdown-markdown --no-cloudflare ./docs` |
-| Save final JSON | `--output ./out/review.json` |
-| Async completion | `--status-file ./out/review.status.json` |
-
-## Handoff
-
-- `prompt` is the compact edit brief.
-- `annotations` are short anchors for locating changes.
-- `phase: completed` or `phase: failed` in the status file signals the end of the run.
-- The review result is the returned JSON payload, not the startup message.
-- If the payload includes an annotation, use its line range and anchor text to make a surgical change.
-
-## Gotchas
-
-- If `--cloudflare` is requested and `cloudflared` is missing, the CLI should fail immediately with an install hint.
-- `--status-file` is for orchestration; do not rely on terminal text alone for completion detection.
-- Keep annotations short and location-focused.
-- Use `--output` plus `--status-file` for long jobs; do not rely on terminal text alone.
-- Launching the session is not the end of the workflow; always wait for the returned payload before acting.
+Payload rules:
+- The returned JSON is the source of truth
+- Use `rootPath`, `files[*].absolutePath`, `annotations[*].selection`, `selectedText`, and `note` to locate edits
+- Do not claim completion until the payload has been read and handled

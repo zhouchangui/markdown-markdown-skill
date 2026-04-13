@@ -1,18 +1,24 @@
 # markdown-markdown-skill
 
-This repository hosts the installable `markdown-markdown-skill` skill.
-
-Use this skill when an agent needs to review Markdown with the `markdown-markdown` npm package, especially for local browser review, IM/Feishu handoff, or long-running jobs that need output and status files.
+Skill for agents that use the `markdown-markdown` npm package to review Markdown files.
 
 ## Install
 
 ```bash
 npx skills add https://github.com/zhouchangui/markdown-markdown-skill
+npm i markdown-markdown
 ```
 
-## Layout
+## Rules
 
-- `SKILL.md` - skill entrypoint
-- `README.md` - short overview and publishing notes
+- Prefer `--browser system` in local terminal sessions.
+- Prefer `--cloudflare` in IM or Feishu handoff flows.
+- If `markdown-markdown review --help` succeeds, use the async session flow.
+- Otherwise use the legacy one-shot flow and wait for the returned JSON.
+- If the review result is `abandoned`, stop and ask whether to restart review or continue without it.
+
+## Files
+
+- `SKILL.md` - concise execution contract
+- `references/cli-contract.md` - compact command notes
 - `LICENSE` - MIT license
-- `references/` - compact supporting docs

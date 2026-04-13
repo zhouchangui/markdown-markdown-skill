@@ -1,26 +1,27 @@
 # markdown-markdown CLI contract
 
-This skill targets the `markdown-markdown` npm package.
+Dependencies:
+- `markdown-markdown`
+- `cloudflared` only for public links
 
-## Required behavior
+Environment:
+- Local: `--browser system`
+- IM/Feishu: `--cloudflare`
 
-- Accept a Markdown file or directory.
-- Prefer a local browser for local work.
-- Prefer a global URL for IM or Feishu chat handoff.
-- Write review output to disk when long-running jobs need a file handoff.
-- Emit a status file so another agent can detect completion.
+Version rule:
+- If `markdown-markdown review --help` succeeds, use async session commands
+- Otherwise use the legacy one-shot command
 
-## Key flags
+Async session loop:
+1. `markdown-markdown review create <path>`
+2. `markdown-markdown review wait`
+3. `finish_review` -> apply payload, continue
+4. `continue_review` -> apply payload, `markdown-markdown review refresh`, wait again
+5. `abandoned` -> stop and ask the user what to do next
 
-- `--browser system` for the OS browser.
-- `--cloudflare` when a public URL is required.
-- `--no-cloudflare` when local-only access is enough.
-- `--output <file>` to write the review JSON.
-- `--status-file <file>` to write run state.
+Legacy loop:
+1. `markdown-markdown ... <path>`
+2. Wait for the returned JSON payload
 
-## Handoff shape
-
-- `prompt` should stay short and actionable.
-- `annotations` should use compact anchors, not long pasted blocks.
-- `phase: completed` means the review is ready.
-- `phase: failed` means the run should stop and surface the error.
+Payload rule:
+- Use the returned JSON, not the startup URL, as the handoff artifact
