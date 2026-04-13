@@ -22,6 +22,7 @@ The review startup JSON includes `sessionId`, `reviewUrl`, `controlUrl`, `public
 
 - Always use the async review commands: `review create`, `review wait`, `review refresh`, and `review close`.
 - Never use the legacy one-shot `markdown-markdown <path>` flow for agent work.
+- If the current conversation is happening in a chat tool, `--cloudflare` is mandatory because the user needs a public link to continue the conversation.
 - Chat-tool channels such as Feishu, WeChat, Slack, or Telegram must use `--cloudflare`.
 - After a chat-tool `review create`, read the returned `reviewUrl`, send it back to the user as a clickable hyperlink, and tell the user to click it to do the review.
 - If the chat channel supports cards, rich messages, or buttons, prefer sending the review link as a card for a better user experience.

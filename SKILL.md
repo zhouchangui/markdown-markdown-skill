@@ -1,6 +1,6 @@
 ---
 name: markdown-markdown-skill
-description: Use when an agent must collect review on Markdown files through `markdown-markdown review`, especially in local browser sessions or chat-tool handoff flows.
+description: Use when an agent must collect review on Markdown files through `markdown-markdown review`, especially in chat-tool conversations that need a public review link or in local browser sessions.
 ---
 
 # markdown-markdown-skill
@@ -16,6 +16,7 @@ Rules:
 - Keep only one active review session at a time
 - `review create` starts the session and prints startup JSON with `sessionId`, `reviewUrl`, `controlUrl`, `publicUrl`, `round`, and `phase`
 - `review wait` is the source of truth for the user's decision
+- If the current conversation is happening in a chat tool, `--cloudflare` is mandatory because the user needs a public link to continue the conversation
 - Chat tools such as Feishu, WeChat, Slack, or Telegram must use `npx markdown-markdown review create --cloudflare <path>`
 - Non-chat sessions default to `npx markdown-markdown review create --no-cloudflare --browser system <path>`
 - In chat-tool flows, send the returned `reviewUrl` back as a clickable link or card and ask the user to click it

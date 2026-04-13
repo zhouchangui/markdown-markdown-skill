@@ -6,7 +6,7 @@ Dependencies:
 - `cloudflared` for public chat-channel links
 
 Environment:
-- Chat tools such as Feishu, WeChat, Slack, or Telegram: `npx markdown-markdown review create --cloudflare <path>`
+- Chat tools such as Feishu, WeChat, Slack, or Telegram: `npx markdown-markdown review create --cloudflare <path>` because the user needs a public link to continue the conversation
 - Non-chat sessions: `npx markdown-markdown review create --no-cloudflare --browser system <path>`
 
 Session rules:
